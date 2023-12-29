@@ -28,14 +28,17 @@ class ChatBot:
             return list_item
 
     def create_todo_list(self, database, todo_name, todo_items):
-        todo = database.create_todo_record(todo_name)
+        try:
+            todo = database.create_todo_record(todo_name)
 
-        for i in todo_items.split('\n'):
-            if i is not None and i != "None" and i != '':
-                text = self.reformat_task(i)
-                data = LLMChatBot().prompt_template(f"'{text}', is the following statement a command, give response only in yes or no format with no definition")
-                if "yes" in data[0].lower():
-                    database.create_todo_item_record(text, todo[0])
+            for i in todo_items.split('\n'):
+                if i is not None and i != "None" and i != '':
+                    text = self.reformat_task(i)
+                    data = LLMChatBot().prompt_template(f"'{text}', is the following statement a command, give response only in yes or no format with no definition")
+                    if "yes" in data[0].lower():
+                        database.create_todo_item_record(text, todo[0])
+        except Exception as E:
+            st.write(E)
 
     def get_bot_response(self, user_input):
         # Add your logic to generate bot responses based on user input
@@ -57,16 +60,19 @@ class ChatBot:
         st.write("--- End of Chat ---")
 
     def main(self, data_base):
-        self.input_message = st.text_input("Enter your message")
-        message = data_base.create_message_record(self.input_message)
-        if self.input_message:
-            if get_prediction(self.input_message) == "List-related":
-                self.update_todo(data_base)
-            else:
-                bot_response = self.get_bot_response(self.input_message)
-                data_base.create_response_record(bot_response[0], message[0])
-                self.create_todo_list(data_base, self.input_message, bot_response[0])
-                self.show_messages(data_base)
+        try:
+            self.input_message = st.text_input("Enter your message")
+            message = data_base.create_message_record(self.input_message)
+            if self.input_message:
+                if get_prediction(self.input_message) == "List-related":
+                    self.update_todo(data_base)
+                else:
+                    bot_response = self.get_bot_response(self.input_message)
+                    data_base.create_response_record(bot_response[0], message[0])
+                    self.create_todo_list(data_base, self.input_message, bot_response[0])
+                    self.show_messages(data_base)
+        except Exception as E:
+            st.write(E)
 
     def get_todo(self, data_base):
         all_todo = """SELECT * FROM Todos ORDER BY created_at DESC"""
