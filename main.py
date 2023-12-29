@@ -31,12 +31,17 @@ if __name__ == "__main__":
     add_slider_2 = st.sidebar.button(
         "Ai Chat bot"
     )
+    d_slider_3 = st.sidebar.button(
+        "Update"
+    )
     data_base = DBConnector()
     data_base.main_connection_to_db('aidb')
     # data_base.create_message_table()
     # data_base.create_response_table()
     # data_base.create_todos_table()
     # data_base.create_todo_item_table()
+    if d_slider_3:
+        ChatBot().update_todo(data_base)
     if add_slider:
         st.write("Here Is a List Of All Your todo")
         ChatBot().get_todo(data_base)

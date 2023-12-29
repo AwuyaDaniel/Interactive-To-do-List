@@ -177,6 +177,7 @@ class DBConnector:
         todo_item_id SERIAL PRIMARY KEY,
         task TEXT,
         todo_id INT NOT NULL,
+        done BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (todo_id) REFERENCES Todos(todo_id)
         )
@@ -266,6 +267,23 @@ class DBConnector:
         # inserted_data = cur.fetchone()
         # print(inserted_data)
         # # Close the cursor and connection
+        cur.close()
+        return True
+
+    def update_todo_item_record(self, response_data: str, todo_id: int, done: int):
+        # Create a cursor object to execute SQL commands
+        cur = self.conn.cursor()
+
+        # Insert data into Responses table
+        # Update query
+        update_todo_item = '''
+            UPDATE TodosItem
+            SET task = %s, done = %s
+            WHERE todo_id = %s
+        '''
+        response_data = (response_data, done, todo_id)
+        cur.execute(update_todo_item, response_data)
+
         cur.close()
         return True
 

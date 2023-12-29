@@ -1,0 +1,22 @@
+Sentence,Label
+Your creativity is truly inspiring,Appreciative
+Thank you for always being so kind and thoughtful,Appreciative
+Your positivity is infectious,Appreciative
+Your hard work and dedication are truly impressive,Appreciative
+I'm disappointed with the service,Negative
+The weather is terrible today,Negative
+Can I add something to the list?,List-related
+I'd like to update my list.,List-related
+Is there a way to modify my entries?,List-related
+I need to make changes to my list.,List-related
+Could you help me edit my list?,List-related
+Can I insert a new item into the list?,List-related
+Is it possible to remove an item from my list?,List-related
+I want to make some updates to my list.,List-related
+How do I change what's on my list?,List-related
+Could you assist me in updating my list?,List-related
+I need to include something new in the list.,List-related
+Can you show me how to alter my list?,List-related
+I'd like to append something to my existing list.,List-related
+Is there an option to delete items from the list?,List-related
+Can the list be modified?,List-related

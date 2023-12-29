@@ -9,6 +9,7 @@ from langchain.utilities import WikipediaAPIWrapper
 from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain.llms import HuggingFaceHub
 import re
+from LoadModel import get_prediction
 
 load_dotenv()  # Load variables from the .env file
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = os.getenv('HUGGINGFACE_API_TOKEN')
@@ -28,14 +29,13 @@ class ChatBot:
 
     def create_todo_list(self, database, todo_name, todo_items):
         todo = database.create_todo_record(todo_name)
-        print(todo_items.split('\n'))
 
         for i in todo_items.split('\n'):
             if i is not None and i != "None" and i != '':
                 text = self.reformat_task(i)
-                data = LLMChatBot().prompt_template(f"{text}, is the following statement a command, give response in yes or no")
-                print(data)
-                # database.create_todo_item_record(text, todo[0])
+                data = LLMChatBot().prompt_template(f"'{text}', is the following statement a command, give response only in yes or no format with no definition")
+                if "yes" in data[0].lower():
+                    database.create_todo_item_record(text, todo[0])
 
     def get_bot_response(self, user_input):
         # Add your logic to generate bot responses based on user input
@@ -59,12 +59,15 @@ class ChatBot:
     def main(self, data_base):
         self.input_message = st.text_input("Enter your message")
         if self.input_message:
-            message = data_base.create_message_record(self.input_message)
-            # print(message)
-            bot_response = self.get_bot_response(self.input_message)
-            data_base.create_response_record(bot_response[0], message[0])
-            self.create_todo_list(data_base, self.input_message, bot_response[0])
-            self.show_messages(data_base)
+            if get_prediction(self.input_message) == "List-related":
+                self.update_todo(data_base)
+            else:
+                message = data_base.create_message_record(self.input_message)
+                # print(message)
+                bot_response = self.get_bot_response(self.input_message)
+                data_base.create_response_record(bot_response[0], message[0])
+                self.create_todo_list(data_base, self.input_message, bot_response[0])
+                self.show_messages(data_base)
 
     def get_todo(self, data_base):
         all_todo = """SELECT * FROM Todos ORDER BY created_at DESC"""
@@ -75,7 +78,26 @@ class ChatBot:
             st.title(i[1])
             for j in responses:
                 if j[2] == i[0]:
-                    st.write(j)
+                    st.write(j[1])
+
+    def update_todo(self, data_base,):
+        command = """
+                SELECT * 
+                FROM Todos 
+                ORDER BY created_at DESC 
+                LIMIT 1
+                """
+        # id = command[0][0]
+        current = data_base.run_customer_query(command)
+        # todo_items = f"""SELECT * FROM TodosItem WHERE todo_id = {current[0][0]}"""
+        # todo_items = data_base.run_customer_query(todo_items)
+        bot_response = self.get_bot_response(self.input_message)
+        for i in bot_response[0].split('\n'):
+            if i is not None and i != "None" and i != '':
+                text = self.reformat_task(i)
+                data = LLMChatBot().prompt_template(f"'{text}', is the following statement a command, give response only in yes or no format with no definition")
+                if "yes" in data[0].lower():
+                    data_base.create_todo_item_record(text, current[0][0])
 
 
 
