@@ -1,17 +1,7 @@
 # import time
 import streamlit as st
 from DataBase import DBConnector
-from app import ChatBot, LLMChatBot
-import os
-# # Add a placeholder
-# # latest_iteration = st.empty()
-# # bar = st.progress(0)
-# #
-# # for i in range(100):
-# #   # Update the progress bar with each iteration.
-# #   latest_iteration.text(f'Iteration {i+1}')
-# #   bar.progress(i + 1)
-# #   time.sleep(0.1)
+from app import ChatBot
 
 messages = []
 
@@ -40,8 +30,6 @@ if __name__ == "__main__":
     # data_base.create_response_table()
     # data_base.create_todos_table()
     # data_base.create_todo_item_table()
-    if d_slider_3:
-        ChatBot().update_todo(data_base)
     if add_slider:
         st.write("Here Is a List Of All Your todo")
         ChatBot().get_todo(data_base)

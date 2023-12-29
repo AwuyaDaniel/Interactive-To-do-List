@@ -58,12 +58,11 @@ class ChatBot:
 
     def main(self, data_base):
         self.input_message = st.text_input("Enter your message")
+        message = data_base.create_message_record(self.input_message)
         if self.input_message:
             if get_prediction(self.input_message) == "List-related":
                 self.update_todo(data_base)
             else:
-                message = data_base.create_message_record(self.input_message)
-                # print(message)
                 bot_response = self.get_bot_response(self.input_message)
                 data_base.create_response_record(bot_response[0], message[0])
                 self.create_todo_list(data_base, self.input_message, bot_response[0])
